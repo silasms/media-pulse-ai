@@ -1,0 +1,13 @@
+bin/
+dist/
+*.exe
+*.test
+*.out
+coverage.txt
+coverage.html
+.env
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
