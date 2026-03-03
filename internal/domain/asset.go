@@ -75,3 +75,18 @@ func (a *MediaAsset) Validate() error {
 	}
 	return nil
 }
+
+type ListFilter struct {
+	Status AssetStatus
+	Limit  int
+	Offset int
+}
+
+type AssetRepository interface {
+	Save(ctx context.Context, asset *MediaAsset) error
+	FindByID(ctx context.Context, id string) (*MediaAsset, error)
+	List(ctx context.Context, filter ListFilter) ([]*MediaAsset, int, error)
+	Update(ctx context.Context, asset *MediaAsset) error
+	UpdateStatus(ctx context.Context, id string, status AssetStatus, errMsg string) error
+	SetMetadata(ctx context.Context, id string, metadata *EnrichedMetadata) error
+}
