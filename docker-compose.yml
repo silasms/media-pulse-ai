@@ -1,0 +1,49 @@
+version: "3.9"
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: mediapulse-api
+    ports:
+      - "8080:8080"
+    environment:
+      - PORT=8080
+      - WORKER_POOL_SIZE=8
+      - QUEUE_CAPACITY=200
+      - AI_PROVIDER=mock
+      - REDIS_ENABLED=true
+      - REDIS_ADDR=redis:6379
+      - CACHE_TTL_MINUTES=15
+      - LOG_LEVEL=info
+    depends_on:
+      redis:
+        condition: service_healthy
+    networks:
+      - mediapulse-network
+    restart: unless-stopped
+
+  redis:
+    image: redis:7.4-alpine
+    container_name: mediapulse-redis
+    ports:
+      - "6379:6379"
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    networks:
+      - mediapulse-network
+    restart: unless-stopped
+
+volumes:
+  redis-data:
+
+networks:
+  mediapulse-network:
+    driver: bridge
